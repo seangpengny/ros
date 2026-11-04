@@ -1,0 +1,28 @@
+{
+  "source": "Payload/client.app/client",
+  "embedded_bundles": [
+    "NIEQRCodeSDKBundle.bundle",
+    "NMOBundle.bundle",
+    "NMOSDKTheme.bundle",
+    "NtUnisdk.bundle",
+    "TwitterKitResources.bundle",
+    "UniSdkGMFeedBack.bundle"
+  ],
+  "embedded_dynamic_libraries": ["rosauthhook.dylib"],
+  "linked_system_frameworks": [
+    "Foundation", "AudioToolbox", "QuartzCore", "OpenAL", "OpenGLES",
+    "CoreGraphics", "UIKit", "CoreText", "CoreTelephony", "VideoToolbox",
+    "CoreVideo", "CoreLocation", "iAd", "AdSupport", "JavaScriptCore",
+    "StoreKit", "CoreFoundation", "MediaPlayer", "AVFoundation", "Accelerate",
+    "CFNetwork", "MobileCoreServices", "SystemConfiguration", "CoreMedia",
+    "Metal", "Security", "MessageUI", "GameController", "CoreMotion",
+    "WebKit", "Photos", "AssetsLibrary", "AppTrackingTransparency",
+    "CoreSpotlight", "ReplayKit", "Accounts", "CoreImage", "GLKit",
+    "GameKit", "ImageIO", "MapKit", "MetalKit", "SafariServices", "Social"
+  ],
+  "observed_linkage": {
+    "weak_frameworks_present": true,
+    "private_frameworks_claimed": false,
+    "interpretation": "These are linkage observations only; they do not establish a server protocol or an authorized integration surface."
+  }
+}

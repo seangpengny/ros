@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ros-game-server-health
+spec:
+  selector:
+    app: ros-game-server
+  ports:
+    - name: health-http
+      port: 8080
+      targetPort: health-http
+      protocol: TCP
+  type: ClusterIP

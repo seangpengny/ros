@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ros-game-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ros-game-server
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        app: ros-game-server
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: game-server
+          image: ghcr.io/replace-me/ros-game-server:VERSION
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: ros-game-server-config
+            - secretRef:
+                name: ros-runtime
+          ports:
+            - name: game-udp
+              containerPort: 9000
+              protocol: UDP
+            - name: health-http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: health-http
+            periodSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health-http
+            periodSeconds: 10
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: "2"
+              memory: 1Gi

@@ -1,0 +1,123 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* ContentView.swift */; };
+		A10000000000000000000002 /* ROSTestClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* ROSTestClientApp.swift */; };
+		A10000000000000000000003 /* ROSTestClientUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* ROSTestClientUITests.swift */; };
+		A10000000000000000000004 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* XCTest.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C10000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E10000000000000000000001;
+			remoteInfo = ROSTestClient;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		B10000000000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B10000000000000000000002 /* ROSTestClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROSTestClientApp.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* ROSTestClientUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROSTestClientUITests.swift; sourceTree = "<group>"; };
+		B10000000000000000000004 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
+		B10000000000000000000005 /* ROSTestClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ROSTestClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000006 /* ROSTestClientUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ROSTestClientUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000007 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F10000000000000000000001 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		F10000000000000000000002 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000004 /* XCTest.framework in Frameworks */,); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		G10000000000000000000001 = {
+			isa = PBXGroup;
+			children = (G10000000000000000000002, G10000000000000000000003, G10000000000000000000004,);
+			sourceTree = "<group>";
+		};
+		G10000000000000000000002 /* ROSTestClient */ = {isa = PBXGroup; children = (B10000000000000000000001 /* ContentView.swift */, B10000000000000000000002 /* ROSTestClientApp.swift */, B10000000000000000000007 /* Info.plist */,); path = ROSTestClient; sourceTree = "<group>"; };
+		G10000000000000000000003 /* ROSTestClientUITests */ = {isa = PBXGroup; children = (B10000000000000000000003 /* ROSTestClientUITests.swift */,); path = ROSTestClientUITests; sourceTree = "<group>"; };
+		G10000000000000000000004 /* Products */ = {isa = PBXGroup; children = (B10000000000000000000005 /* ROSTestClient.app */, B10000000000000000000006 /* ROSTestClientUITests.xctest */,); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E10000000000000000000001 /* ROSTestClient */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H10000000000000000000001 /* Build configuration list for PBXNativeTarget "ROSTestClient" */;
+			buildPhases = (F10000000000000000000003, F10000000000000000000001, F10000000000000000000004,);
+			buildRules = ();
+			dependencies = ();
+			name = ROSTestClient;
+			productName = ROSTestClient;
+			productReference = B10000000000000000000005 /* ROSTestClient.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E10000000000000000000002 /* ROSTestClientUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H10000000000000000000002 /* Build configuration list for PBXNativeTarget "ROSTestClientUITests" */;
+			buildPhases = (F10000000000000000000005, F10000000000000000000002, F10000000000000000000006,);
+			buildRules = ();
+			dependencies = (I10000000000000000000001 /* PBXTargetDependency */,);
+			name = ROSTestClientUITests;
+			productName = ROSTestClientUITests;
+			productReference = B10000000000000000000006 /* ROSTestClientUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D10000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = { LastUpgradeCheck = 2700; TargetAttributes = { E10000000000000000000001 = { CreatedOnToolsVersion = 27.0; }; E10000000000000000000002 = { CreatedOnToolsVersion = 27.0; TestTargetID = E10000000000000000000001; }; }; };
+			buildConfigurationList = H10000000000000000000003 /* Build configuration list for PBXProject "ROSTestClient" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base,);
+			mainGroup = G10000000000000000000001;
+			productRefGroup = G10000000000000000000004 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (E10000000000000000000001 /* ROSTestClient */, E10000000000000000000002 /* ROSTestClientUITests */,);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F10000000000000000000004 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		F10000000000000000000006 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXBuildPhase section */
+		F10000000000000000000003 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000001 /* ContentView.swift in Sources */, A10000000000000000000002 /* ROSTestClientApp.swift in Sources */,); runOnlyForDeploymentPostprocessing = 0; };
+		F10000000000000000000005 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000003 /* ROSTestClientUITests.swift in Sources */,); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		I10000000000000000000001 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = E10000000000000000000001 /* ROSTestClient */; targetProxy = C10000000000000000000001 /* PBXContainerItemProxy */; };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		J10000000000000000000001 /* Debug app */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = ROSTestClient/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 16.0; PRODUCT_BUNDLE_IDENTIFIER = net.roslegacy.testclient; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Debug; };
+		J10000000000000000000002 /* Release app */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = ROSTestClient/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 16.0; PRODUCT_BUNDLE_IDENTIFIER = net.roslegacy.testclient; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Release; };
+		J10000000000000000000003 /* Debug tests */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CODE_SIGNING_ALLOWED = NO; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = ""; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 16.0; PRODUCT_BUNDLE_IDENTIFIER = net.roslegacy.testclient.uitests; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = ROSTestClient; }; name = Debug; };
+		J10000000000000000000004 /* Release tests */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CODE_SIGNING_ALLOWED = NO; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = ""; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 16.0; PRODUCT_BUNDLE_IDENTIFIER = net.roslegacy.testclient.uitests; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = ROSTestClient; }; name = Release; };
+		J10000000000000000000005 /* Debug project */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; SWIFT_VERSION = 5.0; }; name = Debug; };
+		J10000000000000000000006 /* Release project */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; SWIFT_VERSION = 5.0; }; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		H10000000000000000000001 /* Build configuration list for PBXNativeTarget "ROSTestClient" */ = {isa = XCConfigurationList; buildConfigurations = (J10000000000000000000001, J10000000000000000000002,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		H10000000000000000000002 /* Build configuration list for PBXNativeTarget "ROSTestClientUITests" */ = {isa = XCConfigurationList; buildConfigurations = (J10000000000000000000003, J10000000000000000000004,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		H10000000000000000000003 /* Build configuration list for PBXProject "ROSTestClient" */ = {isa = XCConfigurationList; buildConfigurations = (J10000000000000000000005, J10000000000000000000006,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = D10000000000000000000001 /* Project object */;
+}

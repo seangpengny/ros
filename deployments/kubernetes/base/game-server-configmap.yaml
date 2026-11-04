@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ros-game-server-config
+data:
+  # A session launcher may override this with the in-cluster API URL.
+  ROS_API_BASE_URL: ""
+  ROS_GAME_LISTEN_ADDR: ":9000"
+  ROS_GAME_HEALTH_ADDR: ":8080"
+  ROS_GAME_TICK_RATE: "20"
+  ROS_GAME_MAX_PLAYERS: "100"
+  ROS_GAME_MATCH_DURATION: "30s"
+  ROS_GAME_RECONNECT_WINDOW: "20s"

@@ -1,0 +1,771 @@
+openapi: 3.0.3
+info:
+  title: ROS Legacy Independent Backend API
+  version: 1.0.0
+  description: >-
+    Versioned API for the independently implemented ROS-style multiplayer
+    backend. This contract does not describe or claim compatibility with the
+    ROS Legacy IPA.
+servers:
+  - url: http://127.0.0.1:18081
+paths:
+  /healthz:
+    get:
+      operationId: health
+      responses:
+        '200': {description: Process health.}
+  /readyz:
+    get:
+      operationId: readiness
+      responses:
+        '200': {description: Service is ready.}
+        '503': {description: Service is not ready.}
+  /metrics:
+    get:
+      operationId: metrics
+      responses:
+        '200':
+          description: Prometheus-compatible metrics.
+          content:
+            text/plain:
+              schema: {type: string}
+  /v1/auth/register:
+    post:
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Credentials'}
+      responses:
+        '201':
+          description: Account created.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Session'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+  /v1/auth/login:
+    post:
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema: {$ref: '#/components/schemas/LoginCredentials'}
+      responses:
+        '200':
+          description: Authenticated session.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Session'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /v1/auth/refresh:
+    post:
+      operationId: refresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RefreshRequest'}
+      responses:
+        '200':
+          description: Rotated session.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Session'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /v1/auth/logout:
+    post:
+      operationId: logout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RefreshRequest'}
+      responses:
+        '200': {description: Refresh token revoked.}
+  /v1/auth/recovery/request:
+    post:
+      operationId: requestAccountRecovery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: {type: string, format: email}
+      responses:
+        '202': {description: Recovery request accepted without revealing account existence.}
+        '400': {$ref: '#/components/responses/BadRequest'}
+  /v1/auth/recovery/complete:
+    post:
+      operationId: completeAccountRecovery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties:
+                token: {type: string}
+                password: {type: string, minLength: 12}
+      responses:
+        '200': {description: Password reset completed and existing sessions revoked.}
+        '400': {$ref: '#/components/responses/BadRequest'}
+  /v1/auth/sessions:
+    get:
+      operationId: listDeviceSessions
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Active device sessions owned by the caller.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [sessions]
+                properties:
+                  sessions:
+                    type: array
+                    items: {$ref: '#/components/schemas/DeviceSession'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /v1/auth/sessions/{sessionId}:
+    parameters:
+      - name: sessionId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+    delete:
+      operationId: revokeDeviceSession
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Device session revoked.}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {description: Session not found or not owned by caller.}
+  /v1/profile:
+    get:
+      operationId: profile
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Player profile.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Profile'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+    patch:
+      operationId: updateProfile
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                display_name: {type: string}
+                preferences: {type: object, additionalProperties: true}
+      responses:
+        '200':
+          description: Updated player profile.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Profile'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /v1/shop/catalog:
+    get:
+      operationId: shopCatalog
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Authenticated player's catalog and coin balance.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ShopCatalog'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /v1/shop/purchase:
+    post:
+      operationId: purchaseShopItem
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ShopPurchaseRequest'}
+      responses:
+        '201':
+          description: Item purchased and persisted to the player's inventory.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ShopReceipt'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /v1/stats:
+    get:
+      operationId: statistics
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Player statistics.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Stats'}
+  /v1/stats/history:
+    get:
+      operationId: matchHistory
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Match history owned by the caller.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [matches]
+                properties:
+                  matches:
+                    type: array
+                    items: {$ref: '#/components/schemas/HistoryEntry'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /v1/leaderboards:
+    get:
+      operationId: leaderboard
+      security: [{bearerAuth: []}]
+      parameters:
+        - {name: season, in: query, required: true, schema: {type: string}}
+        - {name: mode, in: query, required: true, schema: {type: string, enum: [solo, duo, squad]}}
+        - {name: region, in: query, required: true, schema: {type: string}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 50}}
+      responses:
+        '200':
+          description: Ranked entries for the requested season and queue.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [entries]
+                properties:
+                  entries:
+                    type: array
+                    items: {$ref: '#/components/schemas/LeaderboardEntry'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /v1/lobbies:
+    post:
+      operationId: createLobby
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LobbyRequest'}
+      responses:
+        '201':
+          description: Lobby created.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Lobby'}
+  /v1/lobbies/{lobbyId}:
+    parameters: [{$ref: '#/components/parameters/LobbyId'}]
+    get:
+      operationId: getLobby
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Lobby state.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Lobby'}
+  /v1/lobbies/{lobbyId}/join:
+    parameters: [{$ref: '#/components/parameters/LobbyId'}]
+    post:
+      operationId: joinLobby
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Updated lobby state.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Lobby'}
+  /v1/lobbies/{lobbyId}/ready:
+    parameters: [{$ref: '#/components/parameters/LobbyId'}]
+    post:
+      operationId: setLobbyReady
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ready]
+              properties: {ready: {type: boolean}}
+      responses:
+        '200':
+          description: Updated lobby state.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Lobby'}
+  /v1/lobbies/{lobbyId}/invites:
+    parameters: [{$ref: '#/components/parameters/LobbyId'}]
+    post:
+      operationId: inviteLobbyMember
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LobbyInvitationRequest'}
+      responses:
+        '201':
+          description: Invitation created.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LobbyInvitation'}
+        '403': {description: Lobby owner required.}
+  /v1/lobby-invites:
+    get:
+      operationId: listLobbyInvitations
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Pending invitations for the authenticated account.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [invitations]
+                properties:
+                  invitations: {type: array, items: {$ref: '#/components/schemas/LobbyInvitation'}}
+  /v1/lobby-invites/{invitationId}/accept:
+    parameters: [{$ref: '#/components/parameters/InvitationId'}]
+    post:
+      operationId: acceptLobbyInvitation
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Updated lobby state.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Lobby'}
+  /v1/lobby-invites/{invitationId}/decline:
+    parameters: [{$ref: '#/components/parameters/InvitationId'}]
+    post:
+      operationId: declineLobbyInvitation
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Updated invitation state.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LobbyInvitation'}
+  /v1/presence:
+    post:
+      operationId: setPresence
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [online]
+              properties:
+                online: {type: boolean}
+      responses:
+        '200':
+          description: Updated presence.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Presence'}
+  /v1/presence/{accountId}:
+    parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getPresence
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Current bounded presence state.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Presence'}
+  /v1/sessions:
+    post:
+      operationId: createGameSession
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/GameSessionRequest'}
+      responses:
+        '201':
+          description: Allocating game session.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/GameSession'}
+  /v1/sessions/{sessionId}:
+    parameters: [{$ref: '#/components/parameters/SessionId'}]
+    get:
+      operationId: getGameSession
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Game session lifecycle and admitted participants.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/GameSession'}
+  /v1/sessions/{sessionId}/admit:
+    parameters: [{$ref: '#/components/parameters/SessionId'}]
+    post:
+      operationId: admitGameSessionPlayer
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SessionAdmission'}
+      responses:
+        '200':
+          description: Updated game session.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/GameSession'}
+  /v1/sessions/{sessionId}/start:
+    parameters: [{$ref: '#/components/parameters/SessionId'}]
+    post:
+      operationId: startGameSession
+      description: Internal dedicated-server operation authenticated by deployment token headers.
+      responses:
+        '200': {description: Running game session.}
+  /v1/sessions/{sessionId}/heartbeat:
+    parameters: [{$ref: '#/components/parameters/SessionId'}]
+    post:
+      operationId: heartbeatGameSession
+      description: Internal dedicated-server heartbeat with a bounded Redis lease.
+      responses:
+        '200': {description: Healthy running game session.}
+  /v1/sessions/{sessionId}/complete:
+    parameters: [{$ref: '#/components/parameters/SessionId'}]
+    post:
+      operationId: completeGameSession
+      description: Internal dedicated-server completion and heartbeat cleanup.
+      responses:
+        '200': {description: Completed game session.}
+  /v1/lobbies/{lobbyId}/allocate:
+    parameters: [{$ref: '#/components/parameters/LobbyId'}]
+    post:
+      operationId: allocateLobby
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Allocated lobby state.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Lobby'}
+  /v1/matchmaking/queue:
+    post:
+      operationId: enqueueMatchmaking
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/QueueRequest'}
+      responses:
+        '201':
+          description: Queue ticket.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Ticket'}
+  /v1/matchmaking/queue/{ticketId}:
+    parameters: [{$ref: '#/components/parameters/TicketId'}]
+    delete:
+      operationId: cancelMatchmaking
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Ticket cancelled.}
+  /v1/matchmaking/match:
+    post:
+      operationId: allocateMatch
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/MatchRequest'}
+      responses:
+        '200':
+          description: Durable allocation.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Allocation'}
+components:
+  parameters:
+    LobbyId:
+      name: lobbyId
+      in: path
+      required: true
+      schema: {type: string}
+    TicketId:
+      name: ticketId
+      in: path
+      required: true
+      schema: {type: string}
+    InvitationId:
+      name: invitationId
+      in: path
+      required: true
+      schema: {type: string}
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer}
+  responses:
+    BadRequest:
+      description: Invalid request.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+    Unauthorized:
+      description: Authentication failed.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+  schemas:
+    Credentials:
+      type: object
+      required: [email, password, device_id, display_name]
+      properties:
+        email: {type: string, format: email}
+        password: {type: string, minLength: 12}
+        device_id: {type: string}
+        display_name: {type: string}
+    LoginCredentials:
+      type: object
+      required: [email, password, device_id]
+      properties:
+        email: {type: string, format: email}
+        password: {type: string, minLength: 12}
+        device_id: {type: string}
+    RefreshRequest:
+      type: object
+      required: [refresh_token]
+      properties:
+        refresh_token: {type: string}
+        device_id: {type: string}
+    Session:
+      type: object
+      required: [session_id, account_id, access_token, refresh_token]
+      properties:
+        session_id: {type: string, format: uuid}
+        account_id: {type: string, format: uuid}
+        access_token: {type: string}
+        refresh_token: {type: string}
+    DeviceSession:
+      type: object
+      required: [id, device_id, expires_at, created_at]
+      properties:
+        id: {type: string, format: uuid}
+        device_id: {type: string}
+        expires_at: {type: string, format: date-time}
+        created_at: {type: string, format: date-time}
+    Profile:
+      type: object
+      required: [account_id, display_name]
+      properties:
+        account_id: {type: string, format: uuid}
+        display_name: {type: string}
+        experience: {type: integer}
+        level: {type: integer}
+        preferences: {type: object, additionalProperties: true}
+        inventory: {type: object, additionalProperties: true}
+    ShopCatalog:
+      type: object
+      required: [coins, items]
+      properties:
+        coins: {type: integer, minimum: 0}
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/ShopItem'}
+    ShopItem:
+      type: object
+      required: [item_id, display_name, description, price, gameplay_item]
+      properties:
+        item_id: {type: string}
+        display_name: {type: string}
+        description: {type: string}
+        price: {type: integer, minimum: 0}
+        gameplay_item: {type: boolean}
+    ShopPurchaseRequest:
+      type: object
+      required: [item_id, quantity]
+      properties:
+        item_id: {type: string}
+        quantity: {type: integer, minimum: 1, maximum: 10}
+    ShopReceipt:
+      type: object
+      required: [item_id, quantity, coins, inventory]
+      properties:
+        item_id: {type: string}
+        quantity: {type: integer, minimum: 1}
+        coins: {type: integer, minimum: 0}
+        inventory: {type: object, additionalProperties: {type: integer}}
+    Stats:
+      type: object
+      required: [account_id, matches_played, rating]
+      properties:
+        account_id: {type: string, format: uuid}
+        matches_played: {type: integer}
+        matches_won: {type: integer}
+        eliminations: {type: integer}
+        rating: {type: integer}
+    HistoryEntry:
+      type: object
+      required: [match_id, mode, region, status, placement, eliminations, assists, survival_seconds, started_at]
+      properties:
+        match_id: {type: string, format: uuid}
+        mode: {type: string}
+        region: {type: string}
+        status: {type: string}
+        placement: {type: integer}
+        eliminations: {type: integer}
+        assists: {type: integer}
+        survival_seconds: {type: integer}
+        started_at: {type: string, format: date-time}
+        completed_at: {type: string, format: date-time}
+    LeaderboardEntry:
+      type: object
+      required: [account_id, rating, rank]
+      properties:
+        account_id: {type: string, format: uuid}
+        rating: {type: integer}
+        rank: {type: integer}
+    LobbyRequest:
+      type: object
+      required: [mode, region]
+      properties:
+        mode: {type: string, enum: [solo, duo, squad]}
+        region: {type: string}
+    Lobby:
+      type: object
+      required: [id, owner_id, mode, region, status, members]
+      properties:
+        id: {type: string}
+        owner_id: {type: string}
+        mode: {type: string}
+        region: {type: string}
+        status: {type: string, enum: [open, ready, allocated, closed]}
+        members:
+          type: array
+          items:
+            type: object
+            required: [account_id, ready]
+            properties:
+              account_id: {type: string, format: uuid}
+              ready: {type: boolean}
+    LobbyInvitationRequest:
+      type: object
+      required: [account_id]
+      properties:
+        account_id: {type: string, format: uuid}
+    LobbyInvitation:
+      type: object
+      required: [id, lobby_id, inviter_id, invitee_id, status, created_at, expires_at]
+      properties:
+        id: {type: string}
+        lobby_id: {type: string}
+        inviter_id: {type: string, format: uuid}
+        invitee_id: {type: string, format: uuid}
+        status: {type: string, enum: [pending, accepted, declined, expired]}
+        created_at: {type: string, format: date-time}
+        expires_at: {type: string, format: date-time}
+    Presence:
+      type: object
+      required: [account_id, online, last_seen]
+      properties:
+        account_id: {type: string, format: uuid}
+        online: {type: boolean}
+        last_seen: {type: string, format: date-time}
+    GameSessionRequest:
+      type: object
+      required: [lobby_id]
+      properties:
+        lobby_id: {type: string}
+        max_players: {type: integer, minimum: 2, maximum: 100}
+    SessionAdmission:
+      type: object
+      properties:
+        team_id: {type: string, maxLength: 64}
+    GameSession:
+      type: object
+      required: [id, lobby_id, mode, region, assigned_server, status, max_players, healthy, participants]
+      properties:
+        id: {type: string, format: uuid}
+        lobby_id: {type: string}
+        mode: {type: string, enum: [solo, duo, squad]}
+        region: {type: string}
+        assigned_server: {type: string}
+        status: {type: string, enum: [allocating, staging, running, complete, failed]}
+        max_players: {type: integer}
+        started_at: {type: string, format: date-time}
+        completed_at: {type: string, format: date-time}
+        last_heartbeat: {type: string, format: date-time}
+        healthy: {type: boolean}
+        participants:
+          type: array
+          items:
+            type: object
+            required: [account_id]
+            properties:
+              account_id: {type: string, format: uuid}
+              team_id: {type: string}
+              connected_at: {type: string, format: date-time}
+    QueueRequest:
+      type: object
+      required: [mode, region]
+      properties:
+        mode: {type: string}
+        region: {type: string}
+    Ticket:
+      type: object
+      required: [id, account_id, mode, region, status]
+      properties:
+        id: {type: string}
+        account_id: {type: string}
+        mode: {type: string}
+        region: {type: string}
+        status: {type: string}
+    MatchRequest:
+      type: object
+      required: [mode, region, size]
+      properties:
+        mode: {type: string}
+        region: {type: string}
+        size: {type: integer, minimum: 2, maximum: 100}
+    Allocation:
+      type: object
+      required: [id, mode, region]
+      properties:
+        id: {type: string}
+        mode: {type: string}
+        region: {type: string}
+        tickets: {type: array, items: {$ref: '#/components/schemas/Ticket'}}
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: {type: string}

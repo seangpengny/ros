@@ -1,0 +1,18 @@
+{
+  "source": "RoS-Legacy-iOS.ipa",
+  "archive_format": "ZIP/IPA",
+  "member_count": 1208,
+  "uncompressed_bytes": 895986852,
+  "root_member": "Payload/client.app",
+  "notable_members": [
+    {"path": "Payload/client.app/client", "size_bytes": 63028880, "role": "main executable"},
+    {"path": "Payload/client.app/assets.npk", "size_bytes": 10579472, "role": "packed asset archive"},
+    {"path": "Payload/client.app/script.npk", "size_bytes": 51783198, "role": "packed script archive"},
+    {"path": "Payload/client.app/res/ui.npk", "size_bytes": 520621637, "role": "packed UI asset archive"},
+    {"path": "Payload/client.app/Assets.car", "size_bytes": 339848, "role": "Apple asset catalog"},
+    {"path": "Payload/client.app/Info.plist", "size_bytes": 9762, "role": "bundle metadata"},
+    {"path": "Payload/client.app/neox.xml", "size_bytes": 8164, "role": "engine/resource metadata; not treated as plain text"},
+    {"path": "Payload/client.app/rosauthhook.dylib", "size_bytes": 280680, "role": "embedded dynamic library"}
+  ],
+  "read_policy": "Archive contents were inspected read-only; no IPA member was modified. Private/account-like configuration values were not copied into research artifacts."
+}

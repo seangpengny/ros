@@ -1,0 +1,58 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: make verify-ipa
+      - run: GOTOOLCHAIN=go1.26.10 go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
+      - run: make format
+      - run: make test
+      - run: make vet
+      - run: make race
+      - run: make build
+      - run: make capacity
+      - run: make recovery
+      - name: Verify PostgreSQL and Redis storage
+        env:
+          POSTGRES_USER: ros
+          POSTGRES_DB: ros
+          POSTGRES_PASSWORD: localtestpass
+          REDIS_PASSWORD: localtestpass
+          POSTGRES_PORT: 55432
+          REDIS_PORT: 56379
+        run: make phase4
+      - name: Stop storage test services
+        if: always()
+        env:
+          POSTGRES_USER: ros
+          POSTGRES_DB: ros
+          POSTGRES_PASSWORD: localtestpass
+          REDIS_PASSWORD: localtestpass
+          POSTGRES_PORT: 55432
+          REDIS_PORT: 56379
+        run: docker compose -f deployments/docker/compose.yml down
+      - name: Run API and dedicated-server lifecycle integration
+        env:
+          POSTGRES_USER: ros
+          POSTGRES_DB: ros
+          POSTGRES_PASSWORD: localtestpass
+          REDIS_PASSWORD: localtestpass
+          POSTGRES_PORT: 55432
+          REDIS_PORT: 56379
+          TOKEN_SIGNING_SECRET: phase11-local-secret-change-me-32-bytes-min
+        run: make session-agent-stack
+      - name: Run backend protocol and load integration
+        run: make phase11-backend
+      - run: make validate-deploy
+      - run: docker build -f deployments/docker/Dockerfile.game-server -t ros-game-server:ci .
+      - run: docker build -f deployments/docker/Dockerfile.api-server -t ros-api-server:ci .
+      - run: docker build -f deployments/docker/Dockerfile.migrations -t ros-migrations:ci .

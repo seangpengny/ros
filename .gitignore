@@ -1,0 +1,21 @@
+# Local build/test output
+/bin/
+/artifacts/
+/ipa/
+*.ipa
+
+# OS metadata
+.DS_Store
+
+# Local credentials and Compose state
+.env
+deployments/docker/.env
+
+# Go tooling
+*.test
+*.out
+
+# Python verification scripts
+__pycache__/
+*.py[cod]
+

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ros-game-server
+spec:
+  selector:
+    app: ros-game-server
+  ports:
+    - name: game-udp
+      port: 9000
+      targetPort: game-udp
+      protocol: UDP
+  type: LoadBalancer

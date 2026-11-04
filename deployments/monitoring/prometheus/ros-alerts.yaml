@@ -1,0 +1,30 @@
+groups:
+  - name: ros-legacy-independent-server
+    rules:
+      - alert: ROSAPIHighErrorRate
+        expr: rate(ros_http_request_errors_total[5m]) > 0.05
+        for: 10m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: ROS API is returning elevated 5xx responses
+          description: The API error counter is increasing faster than 0.05 errors per second for 10 minutes.
+      - alert: ROSGameTickOverruns
+        expr: increase(ros_game_tick_overruns_total[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          service: game-server
+        annotations:
+          summary: ROS game server is missing configured tick deadlines
+          description: At least one simulation tick overrun occurred in the last five minutes.
+      - alert: ROSGameValidationViolations
+        expr: increase(ros_game_validation_violations_total[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          service: game-server
+        annotations:
+          summary: ROS game server rejected suspicious protocol input
+          description: Validation violations were observed; investigate source addresses and session IDs.

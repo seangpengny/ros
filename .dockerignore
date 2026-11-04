@@ -1,0 +1,8 @@
+.git
+.gitignore
+artifacts
+bin
+downloaded_game_content
+RoS-Legacy-iOS.ipa
+research
+*.log

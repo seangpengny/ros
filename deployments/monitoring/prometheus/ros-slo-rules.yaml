@@ -1,0 +1,49 @@
+groups:
+  - name: ros-legacy-independent-slos
+    interval: 30s
+    rules:
+      - record: ros:api:availability_5m
+        expr: 1 - (sum(rate(ros_http_request_errors_total[5m])) / clamp_min(sum(rate(ros_http_requests_total[5m])), 1e-9))
+      - record: ros:api:request_duration_average_5m
+        expr: sum(rate(ros_http_request_duration_seconds_total[5m])) / clamp_min(sum(rate(ros_http_requests_total[5m])), 1e-9)
+      - record: ros:game:tick_compliance_5m
+        expr: 1 - (sum(increase(ros_game_tick_overruns_total[5m])) / clamp_min(sum(increase(ros_game_ticks_total[5m])), 1))
+      - record: ros:api:error_budget_burn_5m
+        expr: sum(rate(ros_http_request_errors_total[5m])) / clamp_min(sum(rate(ros_http_requests_total[5m])) * 0.005, 1e-9)
+      - alert: ROSAPIAvailabilitySLO
+        expr: ros:api:availability_5m < 0.995
+        for: 10m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: ROS API availability is below the independent-server SLO
+          description: Five-minute API availability is below 99.5%; investigate errors before the error budget is exhausted.
+      - alert: ROSAPIErrorBudgetBurn
+        expr: ros:api:error_budget_burn_5m > 14.4
+        for: 5m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: ROS API is burning its error budget rapidly
+          description: Five-minute API error-budget burn is above 14.4x the 99.5% SLO budget.
+      - alert: ROSGameTickComplianceSLO
+        expr: ros:game:tick_compliance_5m < 0.999
+        for: 10m
+        labels:
+          severity: warning
+          service: game-server
+        annotations:
+          summary: ROS game tick compliance is below the independent-server SLO
+          description: More than 0.1% of authoritative ticks exceeded the configured deadline in the last five minutes.
+      - alert: ROSAPIRequestLatencySLO
+        expr: ros:api:request_duration_average_5m > 0.25
+        for: 10m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: ROS API average request duration exceeds the baseline SLO
+          description: Average API request duration exceeded 250ms for ten minutes; validate this threshold against production traffic.
+

@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ros-api-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ros-api-server
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8081"
+        prometheus.io/scrape: "true"
+      labels:
+        app: ros-api-server
+    spec:
+      initContainers:
+        - name: database-migrations
+          image: ghcr.io/replace-me/ros-migrations:VERSION
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: ros-runtime
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+      containers:
+        - name: api-server
+          image: ghcr.io/replace-me/ros-api-server:VERSION
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: ros-api-server-config
+            - secretRef:
+                name: ros-runtime
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi

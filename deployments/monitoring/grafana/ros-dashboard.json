@@ -1,0 +1,55 @@
+{
+  "title": "ROS Legacy Independent Server",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "HTTP request errors",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "targets": [{"expr": "rate(ros_http_request_errors_total[5m])", "legendFormat": "5xx/s"}]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Game tick duration",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "targets": [{"expr": "ros_game_tick_duration_seconds_max", "legendFormat": "max"}]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Active players",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "targets": [{"expr": "ros_game_active_players", "legendFormat": "players"}]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Replication and validation",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "targets": [
+        {"expr": "rate(ros_game_snapshot_bytes_total[5m])", "legendFormat": "snapshot bytes/s"},
+        {"expr": "rate(ros_game_validation_violations_total[5m])", "legendFormat": "violations/s"}
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "API availability SLO",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "targets": [{"expr": "ros:api:availability_5m", "legendFormat": "availability"}],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0.99, "max": 1}}
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Game tick compliance SLO",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "targets": [{"expr": "ros:game:tick_compliance_5m", "legendFormat": "tick compliance"}],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0.99, "max": 1}}
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "source": "RoS-Legacy-iOS.ipa",
+  "size_bytes": 846004086,
+  "sha256": "d1f638ad49387a0bca3b5e391799e07faa12f3dca7db32f9fd22f07db14e8c55",
+  "bundle": {
+    "identifier": "net.roslegacy.ios",
+    "display_name": "RoS Legacy",
+    "executable": "client",
+    "short_version": "1.610637.617289",
+    "build_version": "1.610637.617289",
+    "minimum_os_version": "16.0",
+    "supported_platform": "iPhoneOS",
+    "supported_families": ["iPhone", "iPad"],
+    "orientation": ["landscape-right", "landscape-left"]
+  },
+  "build_metadata": {
+    "platform_name": "iphoneos",
+    "platform_version": "15.0",
+    "sdk_name": "iphoneos15.0",
+    "xcode_build": "13A1030d",
+    "compiler": "com.apple.compilers.llvm.clang.1_0"
+  },
+  "binary": {
+    "format": "Mach-O 64-bit executable",
+    "architectures": ["arm64"],
+    "fat_binary": false,
+    "load_commands": ["LC_VERSION_MIN_IPHONEOS", "LC_ENCRYPTION_INFO_64"],
+    "encryption_cryptid": 0
+  },
+  "signing_observation": {
+    "signed": true,
+    "authority": "Apple iPhone OS Application Signing",
+    "entitlements_observed": true,
+    "resources_sealed": false
+  },
+  "simulator_compatibility": {
+    "metadata_candidate": false,
+    "reason": "CFBundleSupportedPlatforms is iPhoneOS, the binary is device-only arm64, and LC_VERSION_MIN_IPHONEOS is present",
+    "runtime_probe": "simctl accepted installation into the app registry but launch was denied"
+  }
+}
